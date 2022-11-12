@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="Ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"> <!-- ./resources/css/bootstrap.css"> -->
+    <title>PID Controll System</title>
+    <script>
+        window.onload = function () {
+            console.log("페이지 열렸습니다~");
+            var widthcount = 1;
+            var socket = io.connect();
+            socket.on('page',function(data){
+                console.log(data.Kp);
+                console.log(data.Ki);
+                console.log(data.Kd);
+                Plotly.extendTraces('chart', { y: [ [data.Kp], [data.Ki], [data.Kd]] }, [0, 1, 2]);
+                Plotly.extendTraces('chart1', { y: [ [data.Gyro]] }, [0]);
+                widthcount++;
+                if (widthcount > 100) { // 100이상일경우 챠트동적이동
+                    Plotly.relayout('chart', {
+                    xaxis: {
+                    range: [widthcount-99, widthcount] // x축 동적이동
+                    }
+                    });
+                    }
+                    
+            })  
+           
+        }
+    </script>
+</head>
+<body>
+    <div id="chart" style="width:50%;height:700px;float:left;">
+    <script>
+        var P_value= { y:[0], name:'P', mode: 'line', marker:{color:"rgb(255,0,0)"} };
+        var I_value= { y:[0], name:'I', mode: 'line', marker:{color:"rgb(0,0,255)"}};
+        var D_value= { y:[0], name: 'D', mode: 'line', marker:{color:"rgb(0,255,0)"}}; 
+        var data= [P_value, I_value, D_value];
+        var layout = {
+            title:'PID Chart'
+        };
+        Plotly.plot('chart', data, layout);
+        </script>
+        </div>
+
+        <!---------------------------------------->
+
+        <div id="chart1" style="width:50%;height:700px;float:left;">
+        <script>
+
+        var Gyro= { y: [1,1], name:'Gyro', mode: 'line', marker:{color:"rgb(0,255,0)"} };
+        var data= [Gyro];
+        var layout = {
+            title:'기울기 값'
+        };
+        Plotly.plot('chart1', data, layout);
+    </script>
+    </div>
+
+    <div style="text-align: left; margin-right: 10px;">
+        <span id="status">작동 여부: Stop</span>
+        <input type="button" class="btn btn-primary" id="start" value="PID Controller Button" onclick="clickStartBtn()" />
+    </div>
+
+    <script>
+        var tmp = 0;
+        function clickStartBtn(){
+            if(tmp % 2 == 0){
+                document.getElementById('status').innerHTML = "작동 여부: Start";
+            }
+            else{
+                document.getElementById('status').innerHTML = "작동 여부: Stop";
+            }
+            tmp++;
+        }
+    </script>
+
+    <div style="text-align: right; margin-right: 10px;">
+        <span id="status1">작동 여부: Stop</span>
+        <input type="button" class="btn btn-primary" id="start1" value="PID Controller Button" onclick="clickStartBtn1()" />
+    </div>
+
+    <script>
+        var tmp1 = 0;
+        function clickStartBtn1(){
+            if(tmp1 % 2 == 0){
+                document.getElementById('status1').innerHTML = "작동 여부: Start";
+            }
+            else{
+                document.getElementById('status1').innerHTML = "작동 여부: Stop";
+            }
+            tmp1++;
+        }
+    </script>
+
+    <div id = "messages">
+        <p>Kp : <span id = "Kp" class = "data">0</span> &nbsp;&nbsp; Ki : <span id = "Ki" class = "data">0</span> &nbsp;&nbsp; Kd : <span id = "Kd" class = "data">0</span> &nbsp;&nbsp; Gyro : <span id = "Gyro" class = "data">0</span></p>
+    </div>
+
+
+</body>
+</html>
