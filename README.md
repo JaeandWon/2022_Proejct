@@ -2,7 +2,7 @@
 주제: PID 제어기를 이용한 밸런싱 로봇 제어
 
 ## 기술스택
-- 제어 : PID 
+- Control: PID, Complementary Filter 
 - Protocol: mqtt, socket  
 - Server: nodeJs  
 - HW(MCU) : Arduino(esp32)
